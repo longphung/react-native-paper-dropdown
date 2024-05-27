@@ -34,6 +34,7 @@ export interface DropDownPropsInterface {
   showDropDown: () => void;
   value: any;
   setValue: (_value: any) => void;
+  disabled?: boolean;
   label?: string | undefined;
   placeholder?: string | undefined;
   mode?: "outlined" | "flat" | undefined;
@@ -57,8 +58,8 @@ export interface DropDownPropsInterface {
 
 type TextInputPropsWithoutTheme = Without<TextInputProps, "theme">;
 
-const DropDown = forwardRef<TouchableWithoutFeedback, DropDownPropsInterface>(
-  (props, ref) => {
+const DropDown = forwardRef(
+  (props: DropDownPropsInterface, ref) => {
     const activeTheme = useTheme();
     const {
       multiSelect = false,
@@ -151,6 +152,7 @@ const DropDown = forwardRef<TouchableWithoutFeedback, DropDownPropsInterface>(
             onPress={showDropDown}
             onLayout={onLayout}
             accessibilityLabel={accessibilityLabel}
+            disabled={props.disabled}
           >
             <View pointerEvents={"none"}>
               <TextInput
