@@ -5,7 +5,8 @@
 [![npm](https://img.shields.io/npm/dt/react-native-paper-dropdown.svg?style=for-the-badge)](https://www.npmjs.com/package/react-native-paper-dropdown)
 [![npm](https://img.shields.io/npm/l/react-native-paper-dropdown?style=for-the-badge)](https://github.com/fateh999/react-native-paper-dropdown/blob/master/LICENSE)
 
-This is a fork of the original react-native-paper-dropdown library.
+This is a fork of the original react-native-paper-dropdown library, because looks like the original project is now unmaintained.
+
 Material Design Dropdown Component using React Native Paper, now also with multiselect
 
 ## Dependencies
