@@ -5,7 +5,7 @@ import {
   TouchableWithoutFeedback,
   View,
   ViewStyle,
-} from "react-native";
+} from 'react-native';
 import {
   Checkbox,
   Divider,
@@ -13,7 +13,7 @@ import {
   TextInput,
   TouchableRipple,
   useTheme,
-} from "react-native-paper";
+} from 'react-native-paper';
 import React, {
   ReactNode,
   forwardRef,
@@ -21,9 +21,9 @@ import React, {
   useState,
   useCallback,
   Fragment,
-} from "react";
-import { Theme } from "react-native-paper/lib/typescript/types";
-import { TextInputProps } from "react-native-paper/lib/typescript/components/TextInput/TextInput";
+} from 'react';
+import { Theme } from 'react-native-paper/lib/typescript/types';
+import { TextInputProps } from 'react-native-paper/lib/typescript/components/TextInput/TextInput';
 
 type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
 
@@ -36,11 +36,13 @@ export interface DropDownPropsInterface {
   setValue: (_value: any) => void;
   disabled?: boolean;
   label?: string | undefined;
+  onChangeText?: (text: string) => void;
+  searchable?: boolean;
   placeholder?: string | undefined;
-  mode?: "outlined" | "flat" | undefined;
+  mode?: 'outlined' | 'flat' | undefined;
   inputProps?: TextInputPropsWithoutTheme;
   list: Array<{
-    label: string;
+    label?: string;
     value: string | number;
     custom?: ReactNode;
   }>;
@@ -56,7 +58,7 @@ export interface DropDownPropsInterface {
   accessibilityLabel?: string;
 }
 
-type TextInputPropsWithoutTheme = Without<TextInputProps, "theme">;
+type TextInputPropsWithoutTheme = Without<TextInputProps, 'theme'>;
 
 const DropDown = forwardRef(
   (props: DropDownPropsInterface, ref) => {
@@ -83,14 +85,20 @@ const DropDown = forwardRef(
       dropDownItemTextStyle,
       dropDownItemSelectedTextStyle,
       accessibilityLabel,
+      searchable,
+      onChangeText,
     } = props;
-    const [displayValue, setDisplayValue] = useState("");
+    const [displayValue, setDisplayValue] = useState('');
     const [inputLayout, setInputLayout] = useState({
       height: 0,
       width: 0,
       x: 0,
       y: 0,
     });
+
+    if (searchable && !onChangeText) {
+      throw new Error('onChangeText is required when searchable is true');
+    }
 
     const onLayout = (event: LayoutChangeEvent) => {
       setInputLayout(event.nativeEvent.layout);
@@ -101,7 +109,7 @@ const DropDown = forwardRef(
         const _labels = list
           .filter((_) => value.indexOf(_.value) !== -1)
           .map((_) => _.label)
-          .join(", ");
+          .join(', ');
         setDisplayValue(_labels);
       } else {
         const _label = list.find((_) => _.value === value)?.label;
@@ -119,26 +127,26 @@ const DropDown = forwardRef(
           return value === currentValue;
         }
       },
-      [value]
+      [value],
     );
 
     const setActive = useCallback(
       (currentValue: any) => {
         if (multiSelect) {
           const valueIndex = value.indexOf(currentValue);
-          const values = value.split(",");
+          const values = value.split(',');
           if (valueIndex === -1) {
-            setValue([...values, currentValue].join(","));
+            setValue([...values, currentValue].join(','));
           } else {
             setValue(
-              [...values].filter((value) => value !== currentValue).join(",")
+              [...values].filter((value) => value !== currentValue).join(','),
             );
           }
         } else {
           setValue(currentValue);
         }
       },
-      [value]
+      [value],
     );
 
     return (
@@ -147,28 +155,37 @@ const DropDown = forwardRef(
         onDismiss={onDismiss}
         theme={theme}
         anchor={
-          <TouchableRipple
-            ref={ref}
-            onPress={showDropDown}
+
+          <TextInput
+            value={displayValue}
+            mode={mode}
+            label={label}
+            placeholder={placeholder}
+            theme={theme}
+            right={
+              <TextInput.Icon icon={visible ? 'menu-up' : 'menu-down'} style={{
+                backgroundColor: 'transparent',
+              }} disabled={props.disabled} onPress={() => {
+                if (props.disabled) {
+                  return;
+                }
+                showDropDown();
+              }} />
+            }
             onLayout={onLayout}
             accessibilityLabel={accessibilityLabel}
+            {...inputProps}
             disabled={props.disabled}
-          >
-            <View pointerEvents={"none"}>
-              <TextInput
-                value={displayValue}
-                mode={mode}
-                label={label}
-                placeholder={placeholder}
-                pointerEvents={"none"}
-                theme={theme}
-                right={
-                  <TextInput.Icon name={visible ? "menu-up" : "menu-down"} />
-                }
-                {...inputProps}
-              />
-            </View>
-          </TouchableRipple>
+            editable={!props.disabled && searchable}
+            readOnly={props.disabled || !searchable}
+            showSoftInputOnFocus={!props.disabled && searchable}
+            onChangeText={(text) => {
+              if (searchable && onChangeText) {
+                setDisplayValue(text);
+                onChangeText(text);
+              }
+            }}
+          />
         }
         style={{
           maxWidth: inputLayout?.width,
@@ -182,19 +199,19 @@ const DropDown = forwardRef(
           style={{
             ...(dropDownContainerHeight
               ? {
-                  height: dropDownContainerHeight,
-                }
+                height: dropDownContainerHeight,
+              }
               : {
-                  maxHeight: dropDownContainerMaxHeight || 200,
-                }),
+                maxHeight: dropDownContainerMaxHeight || 200,
+              }),
           }}
         >
           {list.map((_item, _index) => (
             <Fragment key={_item.value}>
               <TouchableRipple
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: 'row',
+                  alignItems: 'center',
                 }}
                 onPress={() => {
                   setActive(_item.value);
@@ -227,7 +244,7 @@ const DropDown = forwardRef(
                       theme={{
                         colors: { accent: activeTheme?.colors.primary },
                       }}
-                      status={isActive(_item.value) ? "checked" : "unchecked"}
+                      status={isActive(_item.value) ? 'checked' : 'unchecked'}
                       onPress={() => setActive(_item.value)}
                     />
                   )}
@@ -239,7 +256,7 @@ const DropDown = forwardRef(
         </ScrollView>
       </Menu>
     );
-  }
+  },
 );
 
 export default DropDown;
