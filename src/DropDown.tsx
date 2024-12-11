@@ -205,7 +205,7 @@ const DropDown = forwardRef(
                 maxHeight: dropDownContainerMaxHeight || 200,
               }),
           }}
-          keyboardShouldPersistTaps='handle'
+          keyboardShouldPersistTaps='handled'
         >
           {list.map((_item, _index) => (
             <Fragment key={_item.value}>
